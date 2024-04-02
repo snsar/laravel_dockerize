@@ -1,0 +1,58 @@
+version: "3.8"
+services:
+
+  nginx: 
+    image: nginx:1.25.2
+    container_name: nginx_1.25.2-${HOSTNAME}
+    volumes:
+      - ./src:/var/www/html
+      - ./nginx/project1.conf:/etc/nginx/conf.d/project1.conf
+      - ./nginx/project2.conf:/etc/nginx/conf.d/project2.conf
+      - ./nginx/project3.conf:/etc/nginx/conf.d/project3.conf
+    ports:
+      - "9123-9125:9123-9125"
+    networks:
+      - erp
+
+  mysql:
+    image: mariadb:11.1.2
+    container_name: mysql_11.1.2-${HOSTNAME}
+    # user: snsar
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment: 
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: snsar
+      MYSQL_PASSWORD: 998326
+      MYSQL_ROOT_PASSWORD: 998326
+    ports: 
+      - 9316:3306
+    networks:
+      - erp
+
+  php_7.4.33:
+    build: 
+      context: ./php7.4
+      dockerfile: Dockerfile
+    container_name: php_7.4.33-${HOSTNAME}
+    volumes:
+      - ./src/:/var/www/html/
+    networks:
+      - erp
+    image: php_7.4.33
+  
+  php_8.2:
+    build: 
+      context: ./php8.2
+      dockerfile: Dockerfile
+      
+    container_name: php_8.2.0-${HOSTNAME}
+    volumes:
+      - ./src/:/var/www/html/
+    networks:
+      - erp
+    image: php_8.2
+
+networks:
+  erp:
+    driver: bridge
